@@ -1,4 +1,4 @@
-import device
+from device import device
 
 
 class proj:

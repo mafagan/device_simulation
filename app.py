@@ -1,13 +1,11 @@
-import macro
-
 
 class app:
     def __init__(self, name):
         self.name = name
-        self.status = macro.PAUSED
+        self.status = 'paused'
 
     def start(self):
-        self.status = macro.RUNNING
+        self.status = 'running'
 
     def stop(self):
-        self.status = macro.PAUSED
+        self.status = 'paused'

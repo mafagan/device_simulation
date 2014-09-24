@@ -8,13 +8,14 @@ import task
 
 
 class Manager:
-    def __init__(self, projID):
+    def __init__(self):
         self.tasklist = []
         self.tlLock = threading.Lock()
         self.devSet = {}
         self.projSet = {}
         self.mqttc = mosquitto.Mosquitto()
-        self.taskThread = checkThread.ckThread(self.tlLock, self.tasklist)
+        self.taskThread = checkThread.ckThread(self.tlLock, self.tasklist,
+                                               self.mqttc)
         self.flag = False
 
         self.taskThread.start()
@@ -39,12 +40,13 @@ class Manager:
         topic = msg.topic
         payload = msg.payload
 
+        print topic + ': ' + payload
         topic_list = topic.split('/')
         projID = topic_list[0]
         dev = topic_list[1]
 
         lines = payload.split('\r\n')
-        orderList = lines.split(' ')
+        orderList = lines[0].split(' ')
         serNumber = orderList[1]
         cmd = orderList[2]
         argc = orderList[3]
@@ -54,8 +56,13 @@ class Manager:
         tempTask.setProjID(projID)
         tempTask.setSerNumber(serNumber)
         tempTask.setDevice(dev)
+        tempTask.setOperation(cmd)
 
-        #TODO add args
+        if int(argc) != (len(lines) - 1):
+            return
+
+        lines[0] = int(argc)
+        tempTask.setArgs(lines)
 
         if cmd == macro.cmd[macro.GETVER]:
             delay = random.randint(macro.cmd_delay[macro.GETVER][0],
@@ -125,6 +132,10 @@ class Manager:
 
         tempTask.setDelay(delay)
 
+        self.tlLock.acquire()
+        self.tasklist.append(tempTask)
+        self.tlLock.release()
+
     def run(self):
         self.flag = True
         while self.flag:
@@ -132,3 +143,16 @@ class Manager:
 
     def stop(self):
         self.flag = False
+
+if __name__ == '__main__':
+    manager = Manager()
+    manager.addDevice('demo', 'dev')
+    try:
+        manager.run()
+    except KeyboardInterrupt:
+        print ''
+        manager.stop()
+        manager.mqttc.disconnect()
+        print 'Manager loop exit.'
+        manager.taskThread.stop()
+        manager.taskThread.join()
