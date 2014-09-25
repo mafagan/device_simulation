@@ -5,6 +5,9 @@ import macro
 import proj
 import random
 import task
+import sys
+import getopt
+import os
 
 
 class Manager:
@@ -15,13 +18,20 @@ class Manager:
         self.projSet = {}
         self.mqttc = mosquitto.Mosquitto()
         self.taskThread = checkThread.ckThread(self.tlLock, self.tasklist,
-                                               self.mqttc)
+                                               self.mqttc, self.projSet)
         self.flag = False
 
         self.taskThread.start()
         self.mqttc.connect(macro.MQTT_BROKER_IP, macro.MQTT_BROKER_PORT,
                            60, True)
         self.mqttc.on_message = self.on_message
+        self.checkFSDir()
+
+    def checkFSDir(self):
+        path = sys.path[0] + '/filesystem'
+
+        if not (os.path.exists(path)):
+            os.makedirs(path)
 
     def addProj(self, projID):
         if projID in self.projSet:
@@ -34,9 +44,9 @@ class Manager:
             self.addProj(projID)
 
         self.projSet[projID].addDevice(devName)
-        self.mqttc.subscribe(self.projID+'/'+devName+'/'+'mgt')
+        self.mqttc.subscribe(projID+'/'+devName+'/'+'mgt')
 
-    def on_message(self, msg):
+    def on_message(self, mosq, obj, msg):
         topic = msg.topic
         payload = msg.payload
 
@@ -46,6 +56,10 @@ class Manager:
         dev = topic_list[1]
 
         lines = payload.split('\r\n')
+
+        while '' in lines:
+            lines.remove('')
+
         orderList = lines[0].split(' ')
         serNumber = orderList[1]
         cmd = orderList[2]
@@ -64,72 +78,12 @@ class Manager:
         lines[0] = int(argc)
         tempTask.setArgs(lines)
 
-        if cmd == macro.cmd[macro.GETVER]:
-            delay = random.randint(macro.cmd_delay[macro.GETVER][0],
-                                   macro.cmd_delay[macro.GETVER][1])
-
-        elif cmd == macro.cmd[macro.GETCFG]:
-            delay = random.randint(macro.cmd_delay[macro.GETCFG][0],
-                                   macro.cmd_delay[macro.GETCFG][1])
-
-        elif cmd == macro.cmd[macro.GETAPPLIST]:
-            delay = random.randint(macro.cmd_delay[macro.GETAPPLIST][0],
-                                   macro.cmd_delay[macro.GETAPPLIST][1])
-
-        elif cmd == macro.cmd[macro.GETAPILIST]:
-            delay = random.randint(macro.cmd_delay[macro.GETAPILIST][0],
-                                   macro.cmd_delay[macro.GETAPILIST][1])
-
-        elif cmd == macro.cmd[macro.GETAPPLIST]:
-            delay = random.randint(macro.cmd_delay[macro.GETAPPLIST][0],
-                                   macro.cmd_delay[macro.GETAPPLIST][1])
-
-        elif cmd == macro.cmd[macro.SETCFG]:
-            delay = random.randint(macro.cmd_delay[macro.SETCFG][0],
-                                   macro.cmd_delay[macro.SETCFG][1])
-
-        elif cmd == macro.cmd[macro.PING]:
-            delay = random.randint(macro.cmd_delay[macro.PING][0],
-                                   macro.cmd_delay[macro.PING][1])
-
-        elif cmd == macro.cmd[macro.STARTAPP]:
-            delay = random.randint(macro.cmd_delay[macro.STARTAPP][0],
-                                   macro.cmd_delay[macro.STARTAPP][1])
-
-        elif cmd == macro.cmd[macro.STOPAPP]:
-            delay = random.randint(macro.cmd_delay[macro.STOPAPP][0],
-                                   macro.cmd_delay[macro.STOPAPP][1])
-
-        elif cmd == macro.cmd[macro.SYSTEM]:
-            delay = random.randint(macro.cmd_delay[macro.SYSTEM][0],
-                                   macro.cmd_delay[macro.SYSTEM][1])
-
-        elif cmd == macro.cmd[macro.REBOOT]:
-            delay = random.randint(macro.cmd_delay[macro.REBOOT][0],
-                                   macro.cmd_delay[macro.REBOOT][1])
-
-        elif cmd == macro.cmd[macro.UPDATEFM]:
-            delay = random.randint(macro.cmd_delay[macro.UPDATEFM][0],
-                                   macro.cmd_delay[macro.UPDATEFM][1])
-
-        elif cmd == macro.cmd[macro.INSTALLAPP]:
-            delay = random.randint(macro.cmd_delay[macro.INSTALLAPP][0],
-                                   macro.cmd_delay[macro.INSTALLAPP][1])
-
-        elif cmd == macro.cmd[macro.FILEC2D]:
-            delay = random.randint(macro.cmd_delay[macro.FILEC2D][0],
-                                   macro.cmd_delay[macro.FILEC2D][1])
-
-        elif cmd == macro.cmd[macro.FILED2C]:
-            delay = random.randint(macro.cmd_delay[macro.FILED2C][0],
-                                   macro.cmd_delay[macro.FILED2C][1])
-
-        elif cmd == macro.cmd[macro.RPCCALL]:
-            delay = random.randint(macro.cmd_delay[macro.RPCCALL][0],
-                                   macro.cmd_delay[macro.RPCCALL][1])
-        else:
+        if not (cmd in macro.cmd_list.keys()):
+            print 'cmd "' + cmd + '" not exist'
             return
 
+        delay = random.randint(macro.cmd_delay[macro.cmd_list[cmd]][0],
+                               macro.cmd_delay[macro.cmd_list[cmd]][1])
         tempTask.setDelay(delay)
 
         self.tlLock.acquire()
@@ -145,6 +99,12 @@ class Manager:
         self.flag = False
 
 if __name__ == '__main__':
+    opt, arg = getopt.getopt(sys.argv[1:], "c:")
+    cfgfile = None
+
+    if len(opt) != 0:
+        cfgfile = opt[0][1]
+
     manager = Manager()
     manager.addDevice('demo', 'dev')
     try:

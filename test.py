@@ -10,11 +10,14 @@ class input_thread(threading.Thread):
         super(input_thread, self).__init__(name='input_thread')
         self.topic = topic
         self.mqttc = mqttc
+        self.flag = False
 
     def run(self):
-
-        while True:
-            order = raw_input('type command')
+        self.flag = True
+        while self.flag:
+            order = raw_input('type command:\n')
+            if order == 'q':
+                break
             orderList = order.split(' ')
             if len(orderList) == 0:
                 continue
@@ -29,8 +32,11 @@ class input_thread(threading.Thread):
     def send_msg(self, msg):
         self.mqttc.publish(self.topic, msg)
 
+    def stop(self):
+        self.flag = False
 
-def on_message(msg):
+
+def on_message(mosq, obj, msg):
     print msg.topic + ': ' + msg.payload
 
 
@@ -41,5 +47,11 @@ if __name__ == '__main__':
     mqttc.on_message = on_message
 
     it = input_thread(mqttc, topic)
-    it.start()
-    mqttc.loop_forever()
+    try:
+        it.start()
+        mqttc.loop_forever()
+    except KeyboardInterrupt:
+        mqttc.disconnect()
+        it.stop()
+        it.join()
+        print 'test exit'

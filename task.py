@@ -18,7 +18,7 @@ class task:
         self.operation = operation
 
     def setDelay(self, delay):
-        self.endtime = (int)(time.time() + delay)
+        self.endtime = time.time() + delay/1000.0
 
     def setArgs(self, args):
         self.args = args

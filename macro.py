@@ -40,6 +40,24 @@ cmd = {
     RPCCALL: 'rpccall'
 }
 
+cmd_list = {
+    'getver': GETVER,
+    'getapilist': GETAPILIST,
+    'getapplist': GETAPPLIST,
+    'getcfg': GETCFG,
+    'setcfg': SETCFG,
+    'ping': PING,
+    'startapp': STARTAPP,
+    'stopapp': STOPAPP,
+    'system': SYSTEM,
+    'reboot': REBOOT,
+    'updatefirmware': UPDATEFM,
+    'installapp': INSTALLAPP,
+    'filec2d': FILEC2D,
+    'filed2c': FILED2C,
+    'rpccall': RPCCALL
+
+}
 cmd_delay = {
     GETVER: [100, 200],
     GETCFG: [100, 200],
@@ -56,4 +74,22 @@ cmd_delay = {
     FILEC2D: [100, 500],
     FILED2C: [100, 500],
     RPCCALL: [100, 500]
+}
+
+cmd_fail_percent = {
+    GETVER: 30,
+    GETCFG: 30,
+    GETAPILIST: 30,
+    GETAPPLIST: 30,
+    SETCFG: 30,
+    PING: 30,
+    STARTAPP: 30,
+    STOPAPP: 30,
+    SYSTEM: 30,
+    REBOOT: 30,
+    UPDATEFM: 30,
+    INSTALLAPP: 30,
+    FILEC2D: 30,
+    FILED2C: 30,
+    RPCCALL: 30
 }
