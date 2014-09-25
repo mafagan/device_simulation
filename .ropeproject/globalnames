@@ -2,5 +2,6 @@
 INSTALLAPPqUSYSTEMq	UPAUSEDq
 UMQTT_BROKER_IPqURPCCALLqUGETCFGqUUPDATEFMqUREBOOTqUcmd_listqUSTOPAPPqUSETCFGqUGETVERqU
 GETAPILISTqUFILED2CqUcmdqUPINGqUSTARTAPPqU	cmd_delayqURUNNINGqU
-GETAPPLISTqeUdevice]qUdeviceqaUmanager]q(UoptqUmanagerq Ucfgfileq!UManagerq"Uargq#eUcheckThread]q$UckThreadq%aUtest]q&(Umqttcq'Uinput_threadq(Uitq)Utopicq*U
-on_messageq+eu.
+GETAPPLISTqeU
+system_cfg]Udevice]qUdeviceqaUmanager]q(UmanagerqUManagerq eUcheckThread]q!UckThreadq"aUtest]q#(Umqttcq$Uinput_threadq%Uitq&Utopicq'U
+on_messageq(eu.

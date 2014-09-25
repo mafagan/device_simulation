@@ -27,6 +27,16 @@ class Manager:
         self.mqttc.on_message = self.on_message
         self.checkFSDir()
 
+    def loaf_cfg(self):
+        opt, arg = getopt.getopt(sys.argv[1:], "c:")
+        cfgfile = None
+
+        if len(opt) != 0:
+            cfgfile = opt[0][1]
+
+        if cfgfile is not None:
+            pass
+
     def checkFSDir(self):
         path = sys.path[0] + '/filesystem'
 
@@ -99,12 +109,6 @@ class Manager:
         self.flag = False
 
 if __name__ == '__main__':
-    opt, arg = getopt.getopt(sys.argv[1:], "c:")
-    cfgfile = None
-
-    if len(opt) != 0:
-        cfgfile = opt[0][1]
-
     manager = Manager()
     manager.addDevice('demo', 'dev')
     try:
