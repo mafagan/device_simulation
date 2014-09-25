@@ -8,6 +8,35 @@ import task
 import sys
 import getopt
 import os
+import json
+
+
+def _decode_list(data):
+    rv = []
+    for item in data:
+        if isinstance(item, unicode):
+            item = item.encode('utf-8')
+        elif isinstance(item, list):
+            item = _decode_list(item)
+        elif isinstance(item, dict):
+            item = _decode_dict(item)
+        rv.append(item)
+    return rv
+
+
+def _decode_dict(data):
+    rv = {}
+    for key, value in data.iteritems():
+        if isinstance(key, unicode):
+            key = key.encode('utf-8')
+        if isinstance(value, unicode):
+            value = value.encode('utf-8')
+        elif isinstance(value, list):
+            value = _decode_list(value)
+        elif isinstance(value, dict):
+            value = _decode_dict(value)
+        rv[key] = value
+    return rv
 
 
 class Manager:
@@ -26,8 +55,12 @@ class Manager:
                            60, True)
         self.mqttc.on_message = self.on_message
         self.checkFSDir()
+        try:
+            self.load_cfg()
+        except:
+            print 'Load cfg failed'
 
-    def loaf_cfg(self):
+    def load_cfg(self):
         opt, arg = getopt.getopt(sys.argv[1:], "c:")
         cfgfile = None
 
@@ -35,7 +68,27 @@ class Manager:
             cfgfile = opt[0][1]
 
         if cfgfile is not None:
-            pass
+            f = file(cfgfile, 'r')
+            filedata = f.read()
+            f.close()
+
+            cfg_dict = json.loads(filedata, object_hook=_decode_dict)
+            for projID in cfg_dict.keys():
+                self.addProj(projID)
+                for devName in cfg_dict[projID].keys():
+                    self.addDevice(projID, devName)
+                    if 'apiver' in cfg_dict[projID][devName].keys():
+                        self.projSet[projID].devSet[devName] \
+                            .set_ver(cfg_dict[projID][devName]['apiver'])
+
+                    if 'cfg' in cfg_dict[projID][devName].keys():
+                        self.projSet[projID].devSet[devName] \
+                            .set_cfg(cfg_dict[projID][devName]['cfg'])
+
+                    if 'app' in cfg_dict[projID][devName].keys():
+                        for app in cfg_dict[projID][devName].keys():
+                            self.projSet[projID].devSet[devName] \
+                                .add_app(app, cfg_dict[projID][devName][app])
 
     def checkFSDir(self):
         path = sys.path[0] + '/filesystem'
@@ -52,9 +105,9 @@ class Manager:
     def addDevice(self, projID, devName):
         if not (projID in self.projSet):
             self.addProj(projID)
-
         self.projSet[projID].addDevice(devName)
-        self.mqttc.subscribe(projID+'/'+devName+'/'+'mgt')
+        topic = projID + '/' + devName + '/' + 'mgt'
+        self.mqttc.subscribe(topic)
 
     def on_message(self, mosq, obj, msg):
         topic = msg.topic
@@ -110,7 +163,6 @@ class Manager:
 
 if __name__ == '__main__':
     manager = Manager()
-    manager.addDevice('demo', 'dev')
     try:
         manager.run()
     except KeyboardInterrupt:

@@ -31,6 +31,16 @@ class device:
             macro.cmd_list['rpccall']: self.handle_rpccall,
         }
 
+    def set_ver(self, ver):
+        self.ver = ver
+
+    def add_app(self, appname, status):
+        self.applist[appname] = app.app(appname)
+        self.applist[appname].setStatus(status)
+
+    def set_cfg(self, cfg):
+        self.cfg = cfg
+
     def cmd_exec(self, cmd, args):
         res = self.cmd_list[macro.cmd_list[cmd]](args)
         return res

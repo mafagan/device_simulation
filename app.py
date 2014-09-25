@@ -9,3 +9,6 @@ class app:
 
     def stop(self):
         self.status = 'paused'
+
+    def setStatus(self, status):
+        self.status = status
