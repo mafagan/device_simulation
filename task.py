@@ -3,7 +3,7 @@ import time
 
 class task:
     def __init__(self):
-        pass
+        self.flag = True
 
     def setSerNumber(self, serNumber):
         self.serNumber = serNumber
@@ -22,3 +22,6 @@ class task:
 
     def setArgs(self, args):
         self.args = args
+
+    def setValidFlag(self, flag=True):
+        self.flag = flag

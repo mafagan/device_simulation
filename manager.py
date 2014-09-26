@@ -112,7 +112,7 @@ class Manager:
         topic = msg.topic
         payload = msg.payload
 
-        print topic + ': ' + payload
+#       print topic + ': ' + payload
         topic_list = topic.split('/')
         projID = topic_list[0]
         dev = topic_list[1]
@@ -134,8 +134,11 @@ class Manager:
         tempTask.setDevice(dev)
         tempTask.setOperation(cmd)
 
-        if int(argc) != (len(lines) - 1):
-            return
+        if cmd != 'filec2d' and int(argc) != (len(lines) - 1):
+            tempTask.setValidFlag(False)
+
+        if cmd == 'filec2d' and len(lines) != 4:
+            tempTask.setValidFlag(False)
 
         lines[0] = int(argc)
         tempTask.setArgs(lines)
@@ -143,7 +146,6 @@ class Manager:
         if not (cmd in macro.cmd_list.keys()):
             print 'cmd "' + cmd + '" not exist'
             return
-
         delay = random.randint(macro.cmd_delay[macro.cmd_list[cmd]][0],
                                macro.cmd_delay[macro.cmd_list[cmd]][1])
         tempTask.setDelay(delay)

@@ -208,15 +208,15 @@ class device:
 
         if len(args) != 4:
             return None
-
         path = args[1].strip()
         filedata = args[3][:-1]
 
-        dirpath = sys.path[0] + '/filesystem/' + self.projID + '/' + self.devId
+        filepath = sys.path[0] + '/filesystem/' + self.projID + '/' \
+            + self.devId + path
+        dirpath = os.path.dirname(filepath)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
-        path = dirpath + path
-        f = file(path, 'wb')
+        f = file(filepath, 'wb')
         f.write(filedata)
         f.close()
 
@@ -234,7 +234,7 @@ class device:
         if len(args) != 2:
             return None
 
-        path = sys.path[0] + '/filesystem' + self.projID + '/' + self.devId \
+        path = sys.path[0] + '/filesystem/' + self.projID + '/' + self.devId \
             + args[1]
         if os.path.isfile(path):
             filesize = os.path.getsize(path)
@@ -244,11 +244,10 @@ class device:
 
             res = []
             res.append(0)
-            res.append(2)
+            res.append(1)
             res.append('\\xB'+str(filesize)+'\r\n')
             res.append(filedata+'\r\n')
             return res
-
         else:
             return None
 

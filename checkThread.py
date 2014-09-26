@@ -20,9 +20,13 @@ class ckThread(threading.Thread):
 
             curtime = time.time()
             for i in self.tasklist:
+                if not i.flag:
+                    self.send_res_bc(i, None)
+                    continue
                 if(curtime > i.endtime):
                     res = (self.projSet[i.projID].devSet[i.device]) \
                         .cmd_exec(i.operation, i.args)
+
                     self.send_res_bc(i, res)
                     self.tasklist.remove(i)
 
@@ -40,7 +44,7 @@ class ckThread(threading.Thread):
         ret_str = 'EC1 ' + task.serNumber + ' ' + str(res[0]) + ' ' \
             + str(res[1]) + '\r\n'
 
-        for i in range(2, 2+res[1]):
+        for i in range(2, len(res)):
             ret_str = ret_str + res[i]
 
         self.mqttc.publish(ret_path, ret_str)
