@@ -1,7 +1,8 @@
-€}q(Utask]qUtaskqaUmacro]q(UMQTT_BROKER_PORTqUFILEC2DqUcmd_fail_percentqU
-INSTALLAPPqUSYSTEMq	UPAUSEDq
-UMQTT_BROKER_IPqURPCCALLqUGETCFGqUUPDATEFMqUREBOOTqUcmd_listqUSTOPAPPqUSETCFGqUGETVERqU
-GETAPILISTqUFILED2CqUcmdqUPINGqUSTARTAPPqU	cmd_delayqURUNNINGqU
-GETAPPLISTqeU
-system_cfg]Udevice]qUdeviceqaUmanager]q(UmanagerqUManagerq eUcheckThread]q!UckThreadq"aUtest]q#(Umqttcq$Uinput_threadq%Uitq&Utopicq'U
-on_messageq(eUapp]q)Uappq*au.
+€}q(Utask]qUtaskqaU	test_file]q(UmqttcqUfUinput_threadqUpubstrqUtopicqU
+on_messageq	Ufiledataq
+UsizeqeUmacro]q(UMQTT_BROKER_PORTqUFILEC2DqUcmd_fail_percentqU
+INSTALLAPPqUSYSTEMqUPAUSEDqUMQTT_BROKER_IPqURPCCALLqUGETCFGqUUPDATEFMqUREBOOTqUcmd_listqUSTOPAPPqUSETCFGqUGETVERqU
+GETAPILISTqUFILED2CqUcmdqUPINGqUSTARTAPPq U	cmd_delayq!URUNNINGq"U
+GETAPPLISTq#eU
+system_cfg]Udevice]q$Udeviceq%aUmanager]q&(Umanagerq'UManagerq(eUcheckThread]q)UckThreadq*aUtest]q+(Umqttcq,Uinput_threadq-Uitq.Utopicq/U
+on_messageq0eUapp]q1Uappq2au.

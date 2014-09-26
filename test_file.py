@@ -1,6 +1,8 @@
 import mosquitto
 import macro
 import threading
+import os
+
 
 topic = 'demo/dev01/mgt'
 
@@ -46,12 +48,17 @@ if __name__ == '__main__':
     mqttc.subscribe('demo/dev01/mgtr')
     mqttc.on_message = on_message
 
-    it = input_thread(mqttc, topic)
+    f = file('main', 'rb')
+    filedata = f.read()
+    f.close()
+    size = os.path.getsize('main')
+
+    pubstr = 'EC1 123456789 filec2d 2\r\n/tmp/sth.bin\r\n'
+    pubstr = pubstr + '\\x1B' + str(size) + '\r\n'
+    pubstr = pubstr + filedata + '\r\n'
+    mqttc.publish(topic, pubstr)
     try:
-        it.start()
         mqttc.loop_forever()
     except KeyboardInterrupt:
         mqttc.disconnect()
-        it.stop()
-        it.join()
         print 'test exit'

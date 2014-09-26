@@ -31,6 +31,12 @@ class ckThread(threading.Thread):
 
     def send_res_bc(self, task, res):
         ret_path = task.projID + '/' + task.device + '/mgtr'
+
+        if res is None:
+            self.mqttc.publish(ret_path, 'EC1 ' + task.serNumber + ' '
+                               + str(-10005) + ' ' + str(0) + '\r\n')
+            return
+
         ret_str = 'EC1 ' + task.serNumber + ' ' + str(res[0]) + ' ' \
             + str(res[1]) + '\r\n'
 

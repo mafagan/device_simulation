@@ -48,7 +48,6 @@ class device:
 
     def handle_getver(self, args):
         rand_num = random.randint(1, 100)
-
         if rand_num <= macro.cmd_fail_percent[macro.GETVER]:
             return None
 
@@ -62,7 +61,6 @@ class device:
 
     def handle_getapplist(self, args):
         rand_num = random.randint(1, 100)
-
         if rand_num <= macro.cmd_fail_percent[macro.GETAPPLIST]:
             return None
 
@@ -71,7 +69,7 @@ class device:
         res.append(0)
         res.append(len(self.applist))
 
-        for app_itm in self.applist:
+        for app_itm in self.applist.keys():
             ret_value = ''
             ret_value = ret_value + app_itm + ',' \
                 + self.applist[app_itm].status + '\r\n'
@@ -214,10 +212,10 @@ class device:
         path = args[1].strip()
         filedata = args[3][:-1]
 
-        dirpath = sys.path[0] + '/filesystem'
+        dirpath = sys.path[0] + '/filesystem/' + self.projID + '/' + self.devId
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
-        path = sys.path[0] + '/filesystem' + path
+        path = dirpath + path
         f = file(path, 'wb')
         f.write(filedata)
         f.close()
@@ -236,7 +234,8 @@ class device:
         if len(args) != 2:
             return None
 
-        path = sys.path[0] + '/filesystem' + args[1]
+        path = sys.path[0] + '/filesystem' + self.projID + '/' + self.devId \
+            + args[1]
         if os.path.isfile(path):
             filesize = os.path.getsize(path)
             f = file(path, "rb")

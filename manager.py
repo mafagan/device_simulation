@@ -80,15 +80,14 @@ class Manager:
                     if 'apiver' in cfg_dict[projID][devName].keys():
                         self.projSet[projID].devSet[devName] \
                             .set_ver(cfg_dict[projID][devName]['apiver'])
-
                     if 'cfg' in cfg_dict[projID][devName].keys():
                         self.projSet[projID].devSet[devName] \
                             .set_cfg(cfg_dict[projID][devName]['cfg'])
 
                     if 'app' in cfg_dict[projID][devName].keys():
-                        for app in cfg_dict[projID][devName].keys():
+                        for app in cfg_dict[projID][devName]['app'].keys():
                             self.projSet[projID].devSet[devName] \
-                                .add_app(app, cfg_dict[projID][devName][app])
+                                .add_app(app, cfg_dict[projID][devName]['app'][app])
 
     def checkFSDir(self):
         path = sys.path[0] + '/filesystem'
