@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import threading
 import checkThread
 import mosquitto
@@ -10,7 +11,10 @@ import getopt
 import os
 import json
 
+# Module to interact with mqtt broker and add task into tasklist
 
+
+# Hook to transfer unicode string into normal string
 def _decode_list(data):
     rv = []
     for item in data:
@@ -112,7 +116,7 @@ class Manager:
         topic = msg.topic
         payload = msg.payload
 
-#       print topic + ': ' + payload
+        print topic + ': ' + payload
         topic_list = topic.split('/')
         projID = topic_list[0]
         dev = topic_list[1]

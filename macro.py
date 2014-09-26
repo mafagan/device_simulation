@@ -1,4 +1,4 @@
-
+#!/usr/bin/python
 GETVER = 1
 GETAPPLIST = 2
 GETAPILIST = 3
@@ -19,6 +19,7 @@ RPCCALL = 15
 RUNNING = 1
 PAUSED = 2
 
+# MQTT Broker config
 MQTT_BROKER_IP = '127.0.0.1'
 MQTT_BROKER_PORT = 1883
 
@@ -58,6 +59,8 @@ cmd_list = {
     'rpccall': RPCCALL
 
 }
+
+# Delay config
 cmd_delay = {
     GETVER: [100, 200],
     GETCFG: [100, 200],
@@ -76,6 +79,7 @@ cmd_delay = {
     RPCCALL: [100, 500]
 }
 
+# Device offline probablity config
 cmd_fail_percent = {
     GETVER: 30,
     GETCFG: 30,

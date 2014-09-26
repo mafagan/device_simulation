@@ -1,5 +1,8 @@
+#!/usr/bin/python
 import threading
 import time
+
+# Thread to check tasklist and excute task in it
 
 
 class ckThread(threading.Thread):
@@ -24,14 +27,18 @@ class ckThread(threading.Thread):
                     self.send_res_bc(i, None)
                     continue
                 if(curtime > i.endtime):
-                    res = (self.projSet[i.projID].devSet[i.device]) \
-                        .cmd_exec(i.operation, i.args)
-
+                    try:
+                        res = (self.projSet[i.projID].devSet[i.device]) \
+                            .cmd_exec(i.operation, i.args)
+                    except:
+                        pass
                     self.send_res_bc(i, res)
                     self.tasklist.remove(i)
 
             self.lock.release()
         print 'Check thread exit.'
+
+# Send information back to Cloud
 
     def send_res_bc(self, task, res):
         ret_path = task.projID + '/' + task.device + '/mgtr'

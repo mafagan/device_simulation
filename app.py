@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# App in device
+
 
 class app:
     def __init__(self, name):

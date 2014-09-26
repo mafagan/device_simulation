@@ -1,8 +1,11 @@
+#!/usr/bin/python
 import macro
 import app
 import random
 import sys
 import os
+
+# Class to simulate device and excute command
 
 
 class device:
@@ -44,6 +47,7 @@ class device:
     def cmd_exec(self, cmd, args):
         res = self.cmd_list[macro.cmd_list[cmd]](args)
         return res
+
 # return value: [status_code, argc, argv...]
 
     def handle_getver(self, args):
