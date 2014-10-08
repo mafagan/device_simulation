@@ -45,34 +45,47 @@ def _decode_dict(data):
 
 class Manager:
     def __init__(self):
+        bingo_flag = True
         self.tasklist = []
         self.tlLock = threading.Lock()
-        self.devSet = {}
         self.projSet = {}
-        self.mqttc = mosquitto.Mosquitto()
-        self.taskThread = checkThread.ckThread(self.tlLock, self.tasklist,
-                                               self.mqttc, self.projSet)
+        self.mqtt_broker_ip = macro.MQTT_BROKER_IP
+        self.mqtt_broker_port = macro.MQTT_BROKER_PORT
+        self.cfgfile = None
         self.flag = False
 
-        self.taskThread.start()
-        self.mqttc.connect(macro.MQTT_BROKER_IP, macro.MQTT_BROKER_PORT,
-                           60, True)
-        self.mqttc.on_message = self.on_message
         self.checkFSDir()
         try:
             self.load_cfg()
         except:
             print 'Load cfg failed'
+            bingo_flag = False
+
+        self.mqttc = mosquitto.Mosquitto()
+        self.mqttc.connect(self.mqtt_broker_ip, self.mqtt_broker_port,
+                           60, True)
+        self.mqttc.on_message = self.on_message
+        self.sub_topic()
+        self.taskThread = checkThread.ckThread(self.tlLock, self.tasklist,
+                                               self.mqttc, self.projSet)
+        self.taskThread.start()
+
+        if bingo_flag:
+            print 'Init success!'
 
     def load_cfg(self):
-        opt, arg = getopt.getopt(sys.argv[1:], "c:")
-        cfgfile = None
+        opts, arg = getopt.getopt(sys.argv[1:], "c:a:p:")
 
-        if len(opt) != 0:
-            cfgfile = opt[0][1]
+        for opt in opts:
+            if opt[0] == '-c':
+                self.cfgfile = opt[1]
+            elif opt[0] == '-p':
+                self.mqtt_broker_port = opt[1]
+            elif opt[0] == '-a':
+                self.mqtt_broker_ip = opt[1]
 
-        if cfgfile is not None:
-            f = file(cfgfile, 'r')
+        if self.cfgfile is not None:
+            f = file(self.cfgfile, 'r')
             filedata = f.read()
             f.close()
 
@@ -99,6 +112,12 @@ class Manager:
         if not (os.path.exists(path)):
             os.makedirs(path)
 
+    def sub_topic(self):
+        for projID in self.projSet:
+            for dev in self.projSet[projID].devSet:
+                topic = projID + '/' + dev + '/' + 'mgt'
+                self.mqttc.subscribe(topic)
+
     def addProj(self, projID):
         if projID in self.projSet:
             pass
@@ -109,8 +128,6 @@ class Manager:
         if not (projID in self.projSet):
             self.addProj(projID)
         self.projSet[projID].addDevice(devName)
-        topic = projID + '/' + devName + '/' + 'mgt'
-        self.mqttc.subscribe(topic)
 
     def on_message(self, mosq, obj, msg):
         topic = msg.topic

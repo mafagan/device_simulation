@@ -80,9 +80,6 @@ class device:
             res.append(ret_value)
         return res
 
-    def handle_getapilist(self, args):
-        pass
-
     def handle_getcfg(self, args):
         rand_num = random.randint(1, 100)
 

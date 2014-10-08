@@ -1,7 +1,6 @@
 #!/usr/bin/python
 GETVER = 1
 GETAPPLIST = 2
-GETAPILIST = 3
 GETCFG = 4
 SETCFG = 5
 PING = 6
@@ -25,7 +24,6 @@ MQTT_BROKER_PORT = 1883
 
 cmd = {
     GETVER: 'getver',
-    GETAPILIST: 'getapilist',
     GETAPPLIST: 'getapplist',
     GETCFG: 'getcfg',
     SETCFG: 'setcfg',
@@ -43,7 +41,6 @@ cmd = {
 
 cmd_list = {
     'getver': GETVER,
-    'getapilist': GETAPILIST,
     'getapplist': GETAPPLIST,
     'getcfg': GETCFG,
     'setcfg': SETCFG,
@@ -64,7 +61,6 @@ cmd_list = {
 cmd_delay = {
     GETVER: [100, 200],
     GETCFG: [100, 200],
-    GETAPILIST: [100, 200],
     GETAPPLIST: [100, 200],
     SETCFG: [100, 500],
     PING: [100, 500],
@@ -83,7 +79,6 @@ cmd_delay = {
 cmd_fail_percent = {
     GETVER: 30,
     GETCFG: 30,
-    GETAPILIST: 30,
     GETAPPLIST: 30,
     SETCFG: 30,
     PING: 30,
