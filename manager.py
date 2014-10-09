@@ -7,9 +7,9 @@ import proj
 import random
 import task
 import sys
-import getopt
 import os
 import json
+import ConfigParser
 
 # Module to interact with mqtt broker and add task into tasklist
 
@@ -49,20 +49,23 @@ class Manager:
         self.tasklist = []
         self.tlLock = threading.Lock()
         self.projSet = {}
-        self.mqtt_broker_ip = macro.MQTT_BROKER_IP
+        self.mqtt_broker_host = macro.MQTT_BROKER_HOST
         self.mqtt_broker_port = macro.MQTT_BROKER_PORT
-        self.cfgfile = None
+        self.simfile = None
         self.flag = False
+        self.latency = {}
+        self.failure = {}
 
         self.checkFSDir()
         try:
-            self.load_cfg()
+            self.load_conf()
+            self.load_simfile()
         except:
             print 'Load cfg failed'
             bingo_flag = False
 
         self.mqttc = mosquitto.Mosquitto()
-        self.mqttc.connect(self.mqtt_broker_ip, self.mqtt_broker_port,
+        self.mqttc.connect(self.mqtt_broker_host, self.mqtt_broker_port,
                            60, True)
         self.mqttc.on_message = self.on_message
         self.sub_topic()
@@ -73,19 +76,65 @@ class Manager:
         if bingo_flag:
             print 'Init success!'
 
-    def load_cfg(self):
-        opts, arg = getopt.getopt(sys.argv[1:], "c:a:p:")
+    def load_conf(self):
+        conf_file = macro.conf_file
+        cf = ConfigParser.ConfigParser()
+        latency_flag = 0
+        failure_flag = 2
 
-        for opt in opts:
-            if opt[0] == '-c':
-                self.cfgfile = opt[1]
-            elif opt[0] == '-p':
-                self.mqtt_broker_port = opt[1]
-            elif opt[0] == '-a':
-                self.mqtt_broker_ip = opt[1]
+        cf.read(conf_file)
 
-        if self.cfgfile is not None:
-            f = file(self.cfgfile, 'r')
+        host = cf.get('conf', 'mqtt_host')
+        port = cf.get('conf', 'mqtt_port')
+        latency = cf.get('conf', 'latency')
+        failure = cf.get('conf', 'failure')
+        simfile = cf.get('conf', 'simfile')
+
+        if host is not None:
+            self.mqtt_broker_host = host
+
+        if port is not None:
+            self.mqtt_broker_port = port
+
+        if latency == 'low':
+            latency_flag = 1
+
+        if failure == 'low':
+            failure_flag = 3
+
+        self.simfile = simfile
+
+        data_dict = {}
+        data_dict['getver'] = cf.get('latency_and_failure', 'getver').split(' ')
+        data_dict['getapplist'] = cf.get('latency_and_failure', 'getapplist').split(' ')
+        data_dict['getcfg'] = cf.get('latency_and_failure', 'getcfg').split(' ')
+        data_dict['setcfg'] = cf.get('latency_and_failure', 'setcfg').split(' ')
+        data_dict['ping'] = cf.get('latency_and_failure', 'ping').split(' ')
+        data_dict['startapp'] = cf.get('latency_and_failure', 'startapp').split(' ')
+        data_dict['stopapp'] = cf.get('latency_and_failure', 'stopapp').split(' ')
+        data_dict['system'] = cf.get('latency_and_failure', 'system').split(' ')
+        data_dict['reboot'] = cf.get('latency_and_failure', 'reboot').split(' ')
+        data_dict['updatefirmware'] = cf.get('latency_and_failure', 'updatefirmware').split(' ')
+        data_dict['installapp'] = cf.get('latency_and_failure', 'installapp').split(' ')
+        data_dict['filec2d'] = cf.get('latency_and_failure', 'filec2d').split(' ')
+        data_dict['filed2c'] = cf.get('latency_and_failure', 'filed2c').split(' ')
+        data_dict['rpccall'] = cf.get('latency_and_failure', 'rpccall').split(' ')
+
+        for key in data_dict.keys():
+            while '' in data_dict[key]:
+                data_dict[key].remove('')
+
+            macro.cmd_delay[macro.cmd_list[key]] = data_dict[key][latency_flag]
+            macro.cmd_fail_percent[macro.cmd_list[key]] = data_dict[key][failure_flag]
+
+    def load_simfile(self):
+        if self.simfile is not None:
+            f = file(self.simfile, 'r')
+
+            if f is None:
+                print 'Sim file not exist'
+                return
+
             filedata = f.read()
             f.close()
 
@@ -167,8 +216,8 @@ class Manager:
         if not (cmd in macro.cmd_list.keys()):
             print 'cmd "' + cmd + '" not exist'
             return
-        delay = random.randint(macro.cmd_delay[macro.cmd_list[cmd]][0],
-                               macro.cmd_delay[macro.cmd_list[cmd]][1])
+        delay = random.randint(macro.cmd_delay[macro.cmd_list[cmd]]-macro.deviation,
+                               macro.cmd_delay[macro.cmd_list[cmd]]+macro.deviation)
         tempTask.setDelay(delay)
 
         self.tlLock.acquire()

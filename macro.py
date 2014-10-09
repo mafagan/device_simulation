@@ -18,8 +18,10 @@ RPCCALL = 15
 RUNNING = 1
 PAUSED = 2
 
+deviation = 150
+conf_file = 'sim.conf'
 # MQTT Broker config
-MQTT_BROKER_IP = '127.0.0.1'
+MQTT_BROKER_HOST = '127.0.0.1'
 MQTT_BROKER_PORT = 1883
 
 cmd = {
@@ -58,37 +60,7 @@ cmd_list = {
 }
 
 # Delay config
-cmd_delay = {
-    GETVER: [100, 200],
-    GETCFG: [100, 200],
-    GETAPPLIST: [100, 200],
-    SETCFG: [100, 500],
-    PING: [100, 500],
-    STARTAPP: [100, 500],
-    STOPAPP: [100, 500],
-    SYSTEM: [100, 500],
-    REBOOT: [100, 500],
-    UPDATEFM: [100, 500],
-    INSTALLAPP: [100, 500],
-    FILEC2D: [100, 500],
-    FILED2C: [100, 500],
-    RPCCALL: [100, 500]
-}
+cmd_delay = {}
 
 # Device offline probablity config
-cmd_fail_percent = {
-    GETVER: 30,
-    GETCFG: 30,
-    GETAPPLIST: 30,
-    SETCFG: 30,
-    PING: 30,
-    STARTAPP: 30,
-    STOPAPP: 30,
-    SYSTEM: 30,
-    REBOOT: 30,
-    UPDATEFM: 30,
-    INSTALLAPP: 30,
-    FILEC2D: 30,
-    FILED2C: 30,
-    RPCCALL: 30
-}
+cmd_fail_percent = {}
