@@ -2,6 +2,6 @@
 INSTALLAPPq	USYSTEMq
 UPAUSEDqURPCCALLqUGETCFGqU	conf_fileqUUPDATEFMqUMQTT_BROKER_HOSTqU	deviationqUcmd_listqUSTOPAPPqUSETCFGqUGETVERqUFILED2CqUcmdqUPINGqUSTARTAPPqU	cmd_delayqURUNNINGqU
 GETAPPLISTqeU
-system_cfg]Udevice]qUdeviceqaUmanager]q(Umanagerq UManagerq!eUcheckThread]q"UckThreadq#aUtest]q$(Umqttcq%Uinput_threadq&Uitq'Utopicq(U
-on_messageq)eUapp]q*Uappq+aUtest_sub]q,(Umqttcq-UfUinput_threadq.Upubstrq/Utopicq0U
+system_cfg]Utest]q(UmqttcqUinput_threadqUitq Utopicq!U
+on_messageq"eUmanager]q#(Umanagerq$UeUManagerq%eUcheckThread]q&UckThreadq'aUdevice]q(Udeviceq)aUapp]q*Uappq+aUtest_sub]q,(Umqttcq-UfUinput_threadq.Upubstrq/Utopicq0U
 on_messageq1Ufiledataq2Usizeq3eu.

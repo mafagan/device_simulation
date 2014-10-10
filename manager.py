@@ -124,8 +124,8 @@ class Manager:
             while '' in data_dict[key]:
                 data_dict[key].remove('')
 
-            macro.cmd_delay[macro.cmd_list[key]] = data_dict[key][latency_flag]
-            macro.cmd_fail_percent[macro.cmd_list[key]] = data_dict[key][failure_flag]
+            macro.cmd_delay[macro.cmd_list[key]] = int(data_dict[key][latency_flag])
+            macro.cmd_fail_percent[macro.cmd_list[key]] = int(data_dict[key][failure_flag])
 
     def load_simfile(self):
         if self.simfile is not None:
@@ -193,6 +193,10 @@ class Manager:
             lines.remove('')
 
         orderList = lines[0].split(' ')
+        if len(orderList) < 4:
+            print 'Invalid command: ' + orderList
+            return
+
         serNumber = orderList[1]
         cmd = orderList[2]
         argc = orderList[3]
@@ -236,8 +240,9 @@ if __name__ == '__main__':
     manager = Manager()
     try:
         manager.run()
-    except KeyboardInterrupt:
-        print ''
+    except BaseException, e:
+        print e.args
+    finally:
         manager.stop()
         manager.mqttc.disconnect()
         print 'Manager loop exit.'

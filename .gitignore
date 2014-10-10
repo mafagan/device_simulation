@@ -1,4 +1,3 @@
 *.pyc
 main
-filesystem
-testcase
+file_recv

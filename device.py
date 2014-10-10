@@ -98,6 +98,9 @@ class device:
         if rand_num <= macro.cmd_fail_percent[macro.SETCFG]:
             return None
 
+        if len(args) < 2:
+            return None
+
         self.cfg = args[1]
         res = []
         res.append(0)
@@ -122,6 +125,9 @@ class device:
         if rand_num <= macro.cmd_fail_percent[macro.STARTAPP]:
             return None
 
+        if len(args) < 2:
+            return None
+
         appname = args[1]
 
         res = []
@@ -139,6 +145,9 @@ class device:
         rand_num = random.randint(1, 100)
 
         if rand_num <= macro.cmd_fail_percent[macro.STOPAPP]:
+            return None
+
+        if len(args) < 2:
             return None
 
         appname = args[1]
@@ -194,6 +203,9 @@ class device:
         if args[0] != 1:
             return None
 
+        if len(args) < 2:
+            return None
+
         if not (args[1] in self.applist):
             self.applist[args[1]] = app.app(args[1])
         res = []
@@ -203,7 +215,6 @@ class device:
 
     def handle_filec2d(self, args):
         rand_num = random.randint(1, 100)
-
         if rand_num <= macro.cmd_fail_percent[macro.FILEC2D]:
             return None
 
@@ -214,6 +225,7 @@ class device:
 
         filepath = sys.path[0] + '/filesystem/' + self.projID + '/' \
             + self.devId + path
+
         dirpath = os.path.dirname(filepath)
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
