@@ -68,7 +68,7 @@ class Manager:
         self.mqttc.connect(self.mqtt_broker_host, self.mqtt_broker_port,
                            60, True)
         self.mqttc.on_message = self.on_message
-        self.sub_topic()
+        self.mqttc.on_connect = self.on_connect
         self.taskThread = checkThread.ckThread(self.tlLock, self.tasklist,
                                                self.mqttc, self.projSet)
         self.taskThread.start()
@@ -146,6 +146,12 @@ class Manager:
                     if 'apiver' in cfg_dict[projID][devName].keys():
                         self.projSet[projID].devSet[devName] \
                             .set_ver(cfg_dict[projID][devName]['apiver'])
+
+                    if 'datapoint' in cfg_dict[projID][devName].keys():
+                        self.projSet[projID].devSet[devName] \
+                            .set_dp(cfg_dict[projID][devName]['datapoint'])
+
+
                     if 'cfg' in cfg_dict[projID][devName].keys():
                         self.projSet[projID].devSet[devName] \
                             .set_cfg(cfg_dict[projID][devName]['cfg'])
@@ -164,7 +170,8 @@ class Manager:
     def sub_topic(self):
         for projID in self.projSet:
             for dev in self.projSet[projID].devSet:
-                topic = projID + '/' + dev + '/' + 'mgt'
+                topic = projID + '/' + dev + '/' + 'dp_1/dat'
+                print 'sub topic: ' + topic
                 self.mqttc.subscribe(topic)
 
     def addProj(self, projID):
@@ -227,6 +234,10 @@ class Manager:
         self.tlLock.acquire()
         self.tasklist.append(tempTask)
         self.tlLock.release()
+
+    def on_connect(self, client, userdata, msg):
+        print 'MQTT Broker connected with result code ' + str(msg)
+        self.sub_topic()
 
     def run(self):
         self.flag = True

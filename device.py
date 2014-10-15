@@ -16,7 +16,7 @@ class device:
         self.cfg = None
         self.applist = {}
         self.files = []
-
+        self.datapoint = None
         self.cmd_list = {
             macro.cmd_list['getver']: self.handle_getver,
             macro.cmd_list['getapplist']: self.handle_getapplist,
@@ -33,6 +33,9 @@ class device:
             macro.cmd_list['filed2c']: self.handle_filed2c,
             macro.cmd_list['rpccall']: self.handle_rpccall,
         }
+
+    def set_dp(self, datapoint):
+        self.datapoint = datapoint
 
     def set_ver(self, ver):
         self.ver = ver
@@ -169,7 +172,21 @@ class device:
         if rand_num <= macro.cmd_fail_percent[macro.SYSTEM]:
             return None
 
-        pass
+        if len(args) < 2:
+            return None
+
+        res = []
+
+        if args[1] != 'ls' and args[1] != 'ifconfig':
+            return None
+
+        ex_res = os.popen(args[1]).readlines()
+        res.append(0)
+        res.append(len(ex_res))
+
+        for item in ex_res:
+            res.append(item)
+        return res
 
     def handle_reboot(self, args):
         rand_num = random.randint(1, 100)

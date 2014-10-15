@@ -41,7 +41,7 @@ class ckThread(threading.Thread):
 # Send information back to Cloud
 
     def send_res_bc(self, task, res):
-        ret_path = task.projID + '/' + task.device + '/mgtr'
+        ret_path = task.projID + '/' + task.device + '/dp_1/dat'
 
         if res is None:
             self.mqttc.publish(ret_path, 'EC1 ' + task.serNumber + ' '
@@ -54,6 +54,7 @@ class ckThread(threading.Thread):
         for i in range(2, len(res)):
             ret_str = ret_str + res[i]
 
+        print 'pub:\n' + ret_path + '\n' + ret_str
         self.mqttc.publish(ret_path, ret_str)
 
     def stop(self):

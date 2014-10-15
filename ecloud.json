@@ -1,0 +1,14 @@
+{
+  "proj_17": {
+    "gw_1": {
+      "datapoint": "dp_1",
+      "apiver": "v1.0",
+      "cfg": "base64:0123456789",
+      "app": {
+        "appname1": "running",
+        "appname2": "paused",
+        "appname3": "running"
+      }
+    }
+  }
+}

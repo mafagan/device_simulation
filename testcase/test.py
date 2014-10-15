@@ -80,7 +80,8 @@ def filed2c(filepath):
 
 
 def system(cmd):
-    return None
+    res = ece + str(int(time.time())) + ' system 1\r\n' + cmd + '\r\n'
+    return res
 
 
 def systemcall():
@@ -142,6 +143,8 @@ class input_thread(threading.Thread):
                 msg = filec2d(in_data[3], in_data[4])
             elif cmd == 'filed2c':
                 msg = filed2c(in_data[3])
+            elif cmd == 'system':
+                msg = system(in_data[3])
             else:
                 print 'Invalid command!'
 
